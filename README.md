@@ -14,11 +14,11 @@ npm start
 
 ## APIs
 |Method|Endpoint||Description|
-|---|--|--|
-|GET |/category | List of category  |
-|POST |/category | Create new category  |
-|PUT |/category | Update a category  |
-|DELETE |/category | Delete a category  |
+|---|---|---|
+| GET | /category | List of category  |
+| POST | /category | Create new category  |
+| PUT | /category | Update a category  |
+| DELETE | /category | Delete a category  |
 
 
 ## Contribute
