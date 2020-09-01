@@ -16,6 +16,9 @@ npm install
 ```
 npm start
 ```
+## Database
+![erd](erd.png)
+
 
 
 ## APIs
