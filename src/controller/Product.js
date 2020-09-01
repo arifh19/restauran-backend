@@ -19,7 +19,7 @@ Product.all = async (req, res) =>{
             sort = 'DESC' 
         }
         const data = await model.getAll(column, sort)
-        const response = templateResponse(true, 200, 'Data found', data)
+        const response = templateResponse(true, 200, 'List Data', data)
         return res.status(200).json(response)
     }catch(error){
         const response = templateResponse(false, 500, 'Error', error)
