@@ -13,13 +13,8 @@ npm start
 
 
 ## APIs
-| Command | Description |
-| --- | --- |
-| `git status` | List all *new or modified* files |
-| `git diff` | Show file differences that **haven't been** staged |
-
-|Method|Endpoint||Description|
-|---|---|---|
+| Method | Endpoint | Description |
+| --- | --- | --- |
 | GET | /category | List of category  |
 | POST | /category | Create new category  |
 | PUT | /category | Update a category  |
