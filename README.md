@@ -33,4 +33,4 @@ npm start
 
 
 ## Contribute
-Anyone can make meme. Also anyone can contribute into this weird project. Just make pull request to contribute. 
+Just make pull request to contribute. 
