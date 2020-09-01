@@ -1,4 +1,9 @@
 # Restaurant Backend
+## Technology
+`Node JS`
+`Express JS`
+`PostgreSQL`
+`ValidatorJS`
 
 ## How to Install
 ```
