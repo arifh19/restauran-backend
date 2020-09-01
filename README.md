@@ -3,6 +3,7 @@
 ## How to Install
 ```
 git clone https://github.com/arifh19/restaurant-backend.git
+cd restaurant-backend
 npm install
 ```
 
