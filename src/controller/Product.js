@@ -19,7 +19,12 @@ Product.all = async (req, res) =>{
             sort = 'DESC' 
         }
         const data = await model.getAll(column, sort)
-        const response = templateResponse(true, 200, 'List Data', data)
+        let response
+        if (data.length === 0){
+            response = templateResponse(true, 200, 'No Data', data)
+        }else {
+            response = templateResponse(true, 200, 'List Data', data)
+        }
         return res.status(200).json(response)
     }catch(error){
         const response = templateResponse(false, 500, 'Error', error)
@@ -69,7 +74,12 @@ Product.searchByName = async (req, res) =>{
     try{
         const name = req.params.name
         const data = await model.searchByName(name)
-        const response = templateResponse(true, 200, 'Data found', data)
+        let response
+        if (data.length === 0){
+            response = templateResponse(true, 200, 'Data is not found', data)
+        }else {
+            response = templateResponse(true, 200, 'Data is found', data)
+        }        
         return res.status(200).json(response)
     }catch(error){
         const response = templateResponse(false, 500, 'Error', error)

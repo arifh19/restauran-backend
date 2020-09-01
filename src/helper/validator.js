@@ -1,4 +1,6 @@
 const Validator = require('validatorjs')
+const templateResponse = require('./response')
+
 const validation = {}
 
 const validator = (body, rules, customMessages, callback) => {
@@ -10,13 +12,7 @@ const validator = (body, rules, customMessages, callback) => {
 validation.main = (req, res, next, validationRule) =>{
     validator(req.body, validationRule, {}, (err, status) => {
         if (!status) {
-            res.status(400)
-                .send({
-                    success: false,
-                    code: 400,
-                    message: 'Validation failed',
-                    data: err
-                });
+            res.status(400).send(templateResponse(false, 400, 'Validation failed', err))
         } else {
             next();
         }

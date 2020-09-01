@@ -5,7 +5,12 @@ const Category = {}
 Category.all = async (req, res) =>{
     try{
         const data = await model.getAll()
-        const response = templateResponse(true, 200, 'Data found', data)
+        let response
+        if (data.length === 0){
+            response = templateResponse(true, 200, 'No Data', data)
+        }else {
+            response = templateResponse(true, 200, 'List Data', data)
+        }        
         return res.status(200).json(response)
     }catch(error){
         const response = templateResponse(false, 500, 'Error', error)
