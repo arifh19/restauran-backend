@@ -12,13 +12,13 @@ npm start
 ```
 
 
-<!-- ## APIs
+## APIs
 |Method|Endpoint||Description|
 |---|--|--|
-|GET `string`|/category `string`| List of category `string` |
-|POST `string`|/category `string`| Create new category `string` |
-|PUT `string`|/category `string`| Update a category `string` |
-|DELETE `string`|/category `string`| Delete a category `string` | -->
+|GET |/category | List of category  |
+|POST |/category | Create new category  |
+|PUT |/category | Update a category  |
+|DELETE |/category | Delete a category  |
 
 
 ## Contribute
