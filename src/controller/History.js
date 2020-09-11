@@ -1,59 +1,67 @@
 const model = require('../model/History')
-const templateResponse = require('../helper/response')
+const response = require('../helper/response')
+const redis = require('../config/redis')
 const History = {}
 
-History.all = async (req, res) =>{
-    try{
+History.all = async (req, res) => {
+    try {
         const data = await model.getAll()
-        let response
-        if (data.length === 0){
-            response = templateResponse(true, 200, 'No Data', data)
-        }else {
-            response = templateResponse(true, 200, 'List Data', data)
+        let message
+        if (data.length === 0) {
+            message = 'No Data'
+        } else {
+            message = 'List Data'
         }
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+        const data_redis = JSON.stringify(data)
+        redis.redisDB.setex(req.originalUrl, 30, data_redis)
+        return response(res, 200, message, data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-History.add = async (req, res) =>{
-    try{
-        const { invoices, cashier, date, orders, amount } = req.body
-        console.log(req.body)
-        const now = new Date().toISOString()
-        const data = await model.add(invoices, cashier, date, orders, amount, now)
-        const response = templateResponse(true, 201, 'History added successfully', data)
-        return res.status(201).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+History.add = async (req, res) => {
+    try {
+        const {
+            invoices,
+            cashier,
+            date,
+            orders,
+            amount
+        } = req.body
+        const data = await model.add(invoices, cashier, date, orders, amount)
+        return response(res, 201, 'History added successfully', data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-History.edit = async (req, res) =>{
-    try{
-        const { id, invoices, cashier, date, orders, amount } = req.body
-        const now = new Date().toISOString()
-        const data = await model.edit(id, invoices, cashier, date, orders, amount, now)
-        const response = templateResponse(true, 200, 'History updated successfully', data)
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+History.edit = async (req, res) => {
+    try {
+        const {
+            id,
+            invoices,
+            cashier,
+            date,
+            orders,
+            amount
+        } = req.body
+        const data = await model.edit(id, invoices, cashier, date, orders, amount)
+        return response(res, 200, 'History updated successfully', data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-History.delete = async (req, res) =>{
-    try{
-        const { id } = req.body
+History.delete = async (req, res) => {
+    try {
+        const {
+            id
+        } = req.body
         const data = await model.delete(id)
-        const response = templateResponse(true, 200, 'History deleted successfully', data)
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+        return response(res, 200, 'History deleted successfully', data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 module.exports = History

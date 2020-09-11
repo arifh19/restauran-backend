@@ -1,11 +1,20 @@
 const database = require('../config/Databases')
+const ip = require('ip');
 const Product = {}
 
 Product.getAll = (column, sort) => {
     return new Promise((resolve, reject) => {
         database.query(`SELECT T1.*, T2.name as category FROM products T1 INNER JOIN categories T2 ON T1.category_id=T2.id ORDER BY ${column} ${sort}`)
             .then((res) => {
-                resolve(res.rows)
+                const setUrl = (product) => {
+                    let products = {
+                        ...product,
+                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
+                    }
+                    return products;
+                }
+                data = res.rows.map(setUrl)
+                resolve(data)
             })
             .catch((err) => {
                 reject(err)
@@ -13,15 +22,34 @@ Product.getAll = (column, sort) => {
     })
 }
 
-Product.add = (name, image, price, stock, category_id, date) => {
+Product.get = (id) => {
     return new Promise((resolve, reject) => {
-        database.query(`INSERT INTO products (name, image, price, stock, category_id, created_at, updated_at) VALUES ('${name}', '${image}', ${price}, ${stock}, ${category_id}, '${date}', '${date}' ) RETURNING *`)
+        database.query(`SELECT * FROM products WHERE id=${id}`)
+            .then((res) => {
+                const setUrl = (product) => {
+                    let products = {
+                        ...product,
+                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
+                    }
+                    return products;
+                }
+                data = res.rows.map(setUrl)
+                resolve(data[0])
+            })
+            .catch((err) => {
+                reject(err)
+            })
+    })
+}
+
+Product.add = (name, image, price, stock, category_id) => {
+    return new Promise((resolve, reject) => {
+        database.query(`INSERT INTO products (name, image, price, stock, category_id, created_at, updated_at) VALUES ('${name}', '${image}', ${price}, ${stock}, ${category_id}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP ) RETURNING *`)
             .then((res) => {
                 resolve(res.rows)
             })
             .catch((err) => {
-                console.log(err.code)
-                if (err.code === "23503"){
+                if (err.code === "23503") {
                     reject('Category is not available')
                 }
                 reject(err)
@@ -29,20 +57,18 @@ Product.add = (name, image, price, stock, category_id, date) => {
     })
 }
 
-Product.edit = (id, name, image, price, stock, category_id, date) => {
+Product.edit = (id, name, image, price, stock, category_id) => {
     return new Promise((resolve, reject) => {
-        database.query(`UPDATE products SET name='${name}', image='${image}', price='${price}', stock='${stock}', category_id='${category_id}', updated_at='${date}'  WHERE id=${id} RETURNING *`)
+        database.query(`UPDATE products SET name='${name}', image='${image}', price='${price}', stock='${stock}', category_id='${category_id}', updated_at=CURRENT_TIMESTAMP WHERE id=${id} RETURNING *`)
             .then((res) => {
-                if (res.rows.length === 0){
+                if (res.rows.length === 0) {
                     reject('Data is not found')
-                }
-                else{
+                } else {
                     resolve(res.rows)
                 }
             })
             .catch((err) => {
-                console.log(err.code)
-                if (err.code === "23503"){
+                if (err.code === "23503") {
                     reject('Category is not available')
                 }
                 reject(err)
@@ -54,10 +80,9 @@ Product.delete = (id) => {
     return new Promise((resolve, reject) => {
         database.query(`DELETE FROM products WHERE id=${id} RETURNING *`)
             .then((res) => {
-                if (res.rows.length === 0){
+                if (res.rows.length === 0) {
                     reject('Data is not found')
-                }
-                else{
+                } else {
                     resolve(res.rows)
                 }
             })
@@ -71,7 +96,15 @@ Product.searchByName = (name) => {
     return new Promise((resolve, reject) => {
         database.query(`SELECT * FROM products WHERE LOWER(name) LIKE LOWER('%${name}%')`)
             .then((res) => {
-                resolve(res.rows)
+                const setUrl = (product) => {
+                    let products = {
+                        ...product,
+                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
+                    }
+                    return products;
+                }
+                data = res.rows.map(setUrl)
+                resolve(data)
             })
             .catch((err) => {
                 reject(err)

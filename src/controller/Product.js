@@ -1,89 +1,120 @@
 const model = require('../model/Product')
-const templateResponse = require('../helper/response')
+const response = require('../helper/response')
+const redis = require('../config/redis')
 const Product = {}
 
-Product.all = async (req, res) =>{
-    try{
+Product.all = async (req, res) => {
+    try {
         let column
         let sort
-        if (req.query.column === 'category'){
+        if (req.query.column === 'category') {
             column = 'T2.name'
             sort = req.query.sort
-        }
-        else if(Object.keys(req.query).length === 2){
+        } else if (Object.keys(req.query).length === 2) {
             column = `T1.${req.query.column}`
             sort = req.query.sort
-        }
-        else {
+        } else {
             column = 'id'
-            sort = 'DESC' 
+            sort = 'DESC'
         }
+
         const data = await model.getAll(column, sort)
-        let response
-        if (data.length === 0){
-            response = templateResponse(true, 200, 'No Data', data)
-        }else {
-            response = templateResponse(true, 200, 'List Data', data)
+        const data_redis = JSON.stringify(data)
+        redis.redisDB.setex(req.originalUrl, 30, data_redis)
+        let message
+        if (data.length === 0) {
+            message = 'No Data'
+        } else {
+            message = 'List Data'
         }
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+        return response(res, 200, message, data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-Product.add = async (req, res) =>{
-    try{
-        const { name, image, price, stock, category_id } = req.body
-        const date = new Date().toISOString()
-        const data = await model.add(name, image, price, stock, category_id, date)
-        const response = templateResponse(true, 201, 'Product added successfully', data)
-        return res.status(201).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+Product.show = async (req, res) => {
+    try {
+        const id = req.params.id
+        const data = await model.get(id)
+        let message
+        if (data.length === 0) {
+            message = 'No Data'
+        } else {
+            message = 'Data is found'
+        }
+        return response(res, 200, message, data)
+
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-Product.edit = async (req, res) =>{
-    try{
-        const { id, name, image, price, stock, category_id } = req.body
-        const date = new Date().toISOString()
-        const data = await model.edit(id, name, image, price, stock, category_id, date)
-        const response = templateResponse(true, 200, 'Product updated successfully', data)
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+Product.add = async (req, res) => {
+    try {
+        const {
+            name,
+            price,
+            stock,
+            category_id
+        } = req.body
+        const {
+            filename
+        } = req.file
+        console.log(filename)
+        const data = await model.add(name, filename, price, stock, category_id)
+        return response(res, 201, 'Product added successfully', data)
+
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-Product.delete = async (req, res) =>{
-    try{
-        const { id } = req.body
+Product.edit = async (req, res) => {
+    try {
+        const {
+            id,
+            name,
+            price,
+            stock,
+            category_id
+        } = req.body
+        const {
+            filename
+        } = req.file
+        const data = await model.edit(id, name, filename, price, stock, category_id)
+        return response(res, 200, 'Product updated successfully', data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
+    }
+}
+
+Product.delete = async (req, res) => {
+    try {
+        const id = req.params.id
         const data = await model.delete(id)
-        const response = templateResponse(true, 200, 'Product deleted successfully', data)
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+        return response(res, 200, 'Product deleted successfully', data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 
-Product.searchByName = async (req, res) =>{
-    try{
+Product.searchByName = async (req, res) => {
+    try {
         const name = req.params.name
         const data = await model.searchByName(name)
-        let response
-        if (data.length === 0){
-            response = templateResponse(true, 200, 'Data is not found', data)
-        }else {
-            response = templateResponse(true, 200, 'Data is found', data)
-        }        
-        return res.status(200).json(response)
-    }catch(error){
-        const response = templateResponse(false, 500, 'Error', error)
-        return res.status(500).json(response)
+
+        let message
+        if (data.length === 0) {
+            message = 'Data is not found'
+        } else {
+            message = 'Data is found'
+        }
+        const data_redis = JSON.stringify(data)
+        redis.redisDB.setex(req.originalUrl, 30, data_redis)
+        return response(res, 200, message, data)
+    } catch (error) {
+        return response(res, 500, 'Error', error)
     }
 }
 

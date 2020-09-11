@@ -1,5 +1,5 @@
 const Validator = require('validatorjs')
-const templateResponse = require('./response')
+const response = require('./response')
 
 const validation = {}
 
@@ -9,24 +9,24 @@ const validator = (body, rules, customMessages, callback) => {
     validation.fails(() => callback(validation.errors, false))
 }
 
-validation.main = (req, res, next, validationRule) =>{
+validation.main = (req, res, next, validationRule) => {
     validator(req.body, validationRule, {}, (err, status) => {
         if (!status) {
-            res.status(400).send(templateResponse(false, 400, 'Validation failed', err))
+            return response(res, 400, 'Validation failed', err)
         } else {
             next();
         }
     });
 }
 
-validation.addCategory = (req, res, next) =>{
+validation.addCategory = (req, res, next) => {
     const validationRule = {
         "name": "required|string",
     }
     validation.main(req, res, next, validationRule)
 }
 
-validation.editCategory = (req, res, next) =>{
+validation.editCategory = (req, res, next) => {
     const validationRule = {
         "id": "required|integer",
         "name": "required|string",
@@ -35,17 +35,16 @@ validation.editCategory = (req, res, next) =>{
 
 }
 
-validation.deleteCategory = (req, res, next) =>{
+validation.deleteCategory = (req, res, next) => {
     const validationRule = {
         "id": "required|integer",
     }
     validation.main(req, res, next, validationRule)
 }
 
-validation.addProduct = (req, res, next) =>{
+validation.addProduct = (req, res, next) => {
     const validationRule = {
         "name": "required|string",
-        "image": "required|string",
         "price": "required|integer",
         "stock": "required|integer",
         "category_id": "required|integer",
@@ -54,11 +53,10 @@ validation.addProduct = (req, res, next) =>{
 
 }
 
-validation.editProduct = (req, res, next) =>{
+validation.editProduct = (req, res, next) => {
     const validationRule = {
         "id": "required|integer",
         "name": "required|string",
-        "image": "required|string",
         "price": "required|integer",
         "stock": "required|integer",
         "category_id": "required|integer",
@@ -67,26 +65,19 @@ validation.editProduct = (req, res, next) =>{
 
 }
 
-validation.deleteProduct = (req, res, next) =>{
-    const validationRule = {
-        "id": "required|integer",
-    }
-    validation.main(req, res, next, validationRule)
-}
-
-validation.addHistory = (req, res, next) =>{
+validation.addHistory = (req, res, next) => {
     const validationRule = {
         "invoices": "required|string",
         "cashier": "required|string",
-        "date": "required|date",
+        "date": "required|string",
         "orders": "required|string",
-        "amount": "required|integer",
+        "amount": "required|string",
     }
     validation.main(req, res, next, validationRule)
 
 }
 
-validation.editHistory = (req, res, next) =>{
+validation.editHistory = (req, res, next) => {
     const validationRule = {
         "id": "required|integer",
         "invoices": "required|string",
@@ -98,7 +89,7 @@ validation.editHistory = (req, res, next) =>{
     validation.main(req, res, next, validationRule)
 }
 
-validation.deleteHistory = (req, res, next) =>{
+validation.deleteHistory = (req, res, next) => {
     const validationRule = {
         "id": "required|integer",
     }

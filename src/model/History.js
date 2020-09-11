@@ -13,9 +13,9 @@ History.getAll = () => {
     })
 }
 
-History.add = (invoices, cashier, date, orders, amount, now) => {
+History.add = (invoices, cashier, date, orders, amount) => {
     return new Promise((resolve, reject) => {
-        database.query(`INSERT INTO histories (invoices, cashier, date, orders, amount, created_at, updated_at) VALUES ('${invoices}', '${cashier}', '${date}', '${orders}', ${amount}, '${now}', '${now}') RETURNING *`)
+        database.query(`INSERT INTO histories (invoices, cashier, date, orders, amount, created_at, updated_at) VALUES ('${invoices}', '${cashier}', '${date}', '${orders}', ${amount}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`)
             .then((res) => {
                 resolve(res.rows)
             })
@@ -25,14 +25,13 @@ History.add = (invoices, cashier, date, orders, amount, now) => {
     })
 }
 
-History.edit = (id, invoices, cashier, date, orders, amount, now) => {
+History.edit = (id, invoices, cashier, date, orders, amount) => {
     return new Promise((resolve, reject) => {
-        database.query(`UPDATE histories SET invoices='${invoices}', cashier='${cashier}', date='${date}', orders='${orders}', amount=${amount}, updated_at='${now}' WHERE id=${id} RETURNING *`)
+        database.query(`UPDATE histories SET invoices='${invoices}', cashier='${cashier}', date='${date}', orders='${orders}', amount=${amount}, updated_at=CURRENT_TIMESTAMP WHERE id=${id} RETURNING *`)
             .then((res) => {
-                if (res.rows.length === 0){
+                if (res.rows.length === 0) {
                     reject('Data tidak ditemukan')
-                }
-                else{
+                } else {
                     resolve(res.rows)
                 }
             })
@@ -46,10 +45,9 @@ History.delete = (id) => {
     return new Promise((resolve, reject) => {
         database.query(`DELETE FROM histories WHERE id=${id} RETURNING *`)
             .then((res) => {
-                if (res.rows.length === 0){
+                if (res.rows.length === 0) {
                     reject('Data tidak ditemukan')
-                }
-                else{
+                } else {
                     resolve(res.rows)
                 }
             })
