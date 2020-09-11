@@ -1,6 +1,8 @@
 const model = require('../model/Product')
 const response = require('../helper/response')
 const redis = require('../config/redis')
+const validator = require('../helper/validator');
+
 const Product = {}
 
 Product.all = async (req, res) => {
@@ -18,16 +20,16 @@ Product.all = async (req, res) => {
             sort = 'DESC'
         }
 
-        const data = await model.getAll(column, sort)
-        const data_redis = JSON.stringify(data)
+        const results = await model.getAll(column, sort)
+        const data_redis = JSON.stringify(results)
         redis.redisDB.setex(req.originalUrl, 30, data_redis)
         let message
-        if (data.length === 0) {
+        if (results.length === 0) {
             message = 'No Data'
         } else {
             message = 'List Data'
         }
-        return response(res, 200, message, data)
+        return response(res, 200, message, results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -36,14 +38,14 @@ Product.all = async (req, res) => {
 Product.show = async (req, res) => {
     try {
         const id = req.params.id
-        const data = await model.get(id)
+        const results = await model.get(id)
         let message
-        if (data.length === 0) {
+        if (results.length === 0) {
             message = 'No Data'
         } else {
             message = 'Data is found'
         }
-        return response(res, 200, message, data)
+        return response(res, 200, message, results)
 
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -52,18 +54,23 @@ Product.show = async (req, res) => {
 
 Product.add = async (req, res) => {
     try {
+        const data = {
+            name: req.body.name,
+            image: req.file.filename,
+            price: req.body.price,
+            stock: req.body.stock,
+            category_id: req.body.category_id
+        };
         const {
-            name,
-            price,
-            stock,
-            category_id
-        } = req.body
-        const {
-            filename
-        } = req.file
-        console.log(filename)
-        const data = await model.add(name, filename, price, stock, category_id)
-        return response(res, 201, 'Product added successfully', data)
+            error
+        } = validator.addProduct(data);
+
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+
+        const results = await model.add(data)
+        return response(res, 201, 'Product added successfully', results)
 
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -72,18 +79,24 @@ Product.add = async (req, res) => {
 
 Product.edit = async (req, res) => {
     try {
+        const data = {
+            id: req.body.id,
+            name: req.body.name,
+            image: req.file.filename,
+            price: req.body.price,
+            stock: req.body.stock,
+            category_id: req.body.category_id
+        };
         const {
-            id,
-            name,
-            price,
-            stock,
-            category_id
-        } = req.body
-        const {
-            filename
-        } = req.file
-        const data = await model.edit(id, name, filename, price, stock, category_id)
-        return response(res, 200, 'Product updated successfully', data)
+            error
+        } = validator.editProduct(data);
+
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+
+        const results = await model.edit(data)
+        return response(res, 200, 'Product updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -92,8 +105,8 @@ Product.edit = async (req, res) => {
 Product.delete = async (req, res) => {
     try {
         const id = req.params.id
-        const data = await model.delete(id)
-        return response(res, 200, 'Product deleted successfully', data)
+        const results = await model.delete(id)
+        return response(res, 200, 'Product deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -102,17 +115,17 @@ Product.delete = async (req, res) => {
 Product.searchByName = async (req, res) => {
     try {
         const name = req.params.name
-        const data = await model.searchByName(name)
+        const results = await model.searchByName(name)
 
         let message
-        if (data.length === 0) {
+        if (results.length === 0) {
             message = 'Data is not found'
         } else {
             message = 'Data is found'
         }
-        const data_redis = JSON.stringify(data)
+        const data_redis = JSON.stringify(results)
         redis.redisDB.setex(req.originalUrl, 30, data_redis)
-        return response(res, 200, message, data)
+        return response(res, 200, message, results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }

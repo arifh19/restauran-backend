@@ -1,4 +1,4 @@
-const response = (res, status, message, result = "") => {
+const response = (res, status, message, result = {}) => {
     let desc = ""
 
     switch (status) {

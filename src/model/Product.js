@@ -42,9 +42,9 @@ Product.get = (id) => {
     })
 }
 
-Product.add = (name, image, price, stock, category_id) => {
+Product.add = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`INSERT INTO products (name, image, price, stock, category_id, created_at, updated_at) VALUES ('${name}', '${image}', ${price}, ${stock}, ${category_id}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP ) RETURNING *`)
+        database.query(`INSERT INTO products (name, image, price, stock, category_id, created_at, updated_at) VALUES ('${data.name}', '${data.image}', ${data.price}, ${data.stock}, ${data.category_id}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP ) RETURNING *`)
             .then((res) => {
                 resolve(res.rows)
             })
@@ -57,9 +57,9 @@ Product.add = (name, image, price, stock, category_id) => {
     })
 }
 
-Product.edit = (id, name, image, price, stock, category_id) => {
+Product.edit = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`UPDATE products SET name='${name}', image='${image}', price='${price}', stock='${stock}', category_id='${category_id}', updated_at=CURRENT_TIMESTAMP WHERE id=${id} RETURNING *`)
+        database.query(`UPDATE products SET name='${data.name}', image='${data.image}', price='${data.price}', stock='${data.stock}', category_id='${data.category_id}', updated_at=CURRENT_TIMESTAMP WHERE id=${data.id} RETURNING *`)
             .then((res) => {
                 if (res.rows.length === 0) {
                     reject('Data is not found')

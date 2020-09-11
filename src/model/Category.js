@@ -13,9 +13,9 @@ Category.getAll = () => {
     })
 }
 
-Category.add = (name) => {
+Category.add = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`INSERT INTO categories (name, created_at, updated_at) VALUES ('${name}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`)
+        database.query(`INSERT INTO categories (name, created_at, updated_at) VALUES ('${data.name}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`)
             .then((res) => {
                 resolve(res.rows)
             })
@@ -25,9 +25,9 @@ Category.add = (name) => {
     })
 }
 
-Category.edit = (id, name) => {
+Category.edit = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`UPDATE categories SET name='${name}', updated_at=CURRENT_TIMESTAMP WHERE id=${id} RETURNING *`)
+        database.query(`UPDATE categories SET name='${data.name}', updated_at=CURRENT_TIMESTAMP WHERE id=${data.id} RETURNING *`)
             .then((res) => {
                 if (res.rows.length === 0) {
                     reject('Data is not found')
@@ -41,9 +41,9 @@ Category.edit = (id, name) => {
     })
 }
 
-Category.delete = (id) => {
+Category.delete = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`DELETE FROM categories WHERE id=${id} RETURNING *`)
+        database.query(`DELETE FROM categories WHERE id=${data.id} RETURNING *`)
             .then((res) => {
                 if (res.rows.length === 0) {
                     reject('Data is not found')

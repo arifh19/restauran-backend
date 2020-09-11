@@ -4,22 +4,26 @@ const hashPassword = require('../helper/hash')
 const {
     v4: uuidv4
 } = require('uuid')
+const validator = require('../helper/validator')
+const redis = require('../config/redis')
 
 const User = {}
 
 
 User.all = async (req, res) => {
     try {
-        const data = await model.getAll()
+        const results = await model.getAll()
         let message
-        if (data.length === 0) {
+        if (results.length === 0) {
             message = 'No Data'
         } else {
             message = 'List Data'
         }
-        const data_redis = JSON.stringify(data)
+
+        const data_redis = JSON.stringify(results)
         redis.redisDB.setex(req.originalUrl, 30, data_redis)
-        return response(res, 200, message, data)
+
+        return response(res, 200, message, results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -27,8 +31,10 @@ User.all = async (req, res) => {
 
 User.getByUsername = async (req, res) => {
     try {
-        const data = await model.getUsername(req.body.username)
-        return response(res, 200, message, data)
+        const results = await model.getUsername(req.body.username)
+        const data_redis = JSON.stringify(results)
+        redis.redisDB.setex(req.originalUrl, 30, data_redis)
+        return response(res, 200, message, results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -36,15 +42,22 @@ User.getByUsername = async (req, res) => {
 
 User.add = async (req, res) => {
     try {
-        const passHash = await hashPassword(req.body.password)
+        const data = {
+            username: req.body.username,
+            password: req.body.password,
+            name: req.body.name,
+            role: req.body.role,
+        }
         const {
-            name,
-            username,
-            role
-        } = req.body
+            error
+        } = validator.addUser(data);
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const passHash = await hashPassword(req.body.password)
         const uuid = uuidv4()
-        const data = await model.add(uuid, name, username, passHash, role)
-        return response(res, 201, 'User added successfully', data)
+        const results = await model.add(uuid, passHash, data)
+        return response(res, 201, 'User added successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -52,15 +65,22 @@ User.add = async (req, res) => {
 
 User.edit = async (req, res) => {
     try {
+        const data = {
+            id: req.body.id,
+            username: req.body.username,
+            password: req.body.password,
+            name: req.body.name,
+            role: req.body.role,
+        }
         const {
-            id,
-            name,
-            username,
-            password,
-            role
-        } = req.body
-        const data = await model.edit(id, name, username, password, role)
-        return response(res, 200, 'User updated successfully', data)
+            error
+        } = validator.editUser(data);
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const passHash = await hashPassword(req.body.password)
+        const results = await model.edit(passHash, data)
+        return response(res, 200, 'User updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -68,11 +88,17 @@ User.edit = async (req, res) => {
 
 User.delete = async (req, res) => {
     try {
+        const data = {
+            id: req.body.id,
+        }
         const {
-            id
-        } = req.body
-        const data = await model.delete(id)
-        return response(res, 200, 'User deleted successfully', data)
+            error
+        } = validator.deleteUser(data);
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const results = await model.delete(data)
+        return response(res, 200, 'User deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }

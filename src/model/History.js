@@ -13,9 +13,9 @@ History.getAll = () => {
     })
 }
 
-History.add = (invoices, cashier, date, orders, amount) => {
+History.add = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`INSERT INTO histories (invoices, cashier, date, orders, amount, created_at, updated_at) VALUES ('${invoices}', '${cashier}', '${date}', '${orders}', ${amount}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`)
+        database.query(`INSERT INTO histories (invoices, cashier, date, orders, amount, created_at, updated_at) VALUES ('${data.invoices}', '${data.cashier}', '${data.date}', '${data.orders}', ${data.amount}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`)
             .then((res) => {
                 resolve(res.rows)
             })
@@ -25,9 +25,9 @@ History.add = (invoices, cashier, date, orders, amount) => {
     })
 }
 
-History.edit = (id, invoices, cashier, date, orders, amount) => {
+History.edit = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`UPDATE histories SET invoices='${invoices}', cashier='${cashier}', date='${date}', orders='${orders}', amount=${amount}, updated_at=CURRENT_TIMESTAMP WHERE id=${id} RETURNING *`)
+        database.query(`UPDATE histories SET invoices='${data.invoices}', cashier='${data.cashier}', date='${data.date}', orders='${data.orders}', amount=${data.amount}, updated_at=CURRENT_TIMESTAMP WHERE id=${data.id} RETURNING *`)
             .then((res) => {
                 if (res.rows.length === 0) {
                     reject('Data tidak ditemukan')
@@ -41,9 +41,9 @@ History.edit = (id, invoices, cashier, date, orders, amount) => {
     })
 }
 
-History.delete = (id) => {
+History.delete = (data) => {
     return new Promise((resolve, reject) => {
-        database.query(`DELETE FROM histories WHERE id=${id} RETURNING *`)
+        database.query(`DELETE FROM histories WHERE id=${data.id} RETURNING *`)
             .then((res) => {
                 if (res.rows.length === 0) {
                     reject('Data tidak ditemukan')

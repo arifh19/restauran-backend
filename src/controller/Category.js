@@ -1,6 +1,7 @@
 const model = require('../model/Category')
 const response = require('../helper/response')
 const redis = require('../config/redis')
+const validator = require('../helper/validator')
 const Category = {}
 
 Category.all = async (req, res) => {
@@ -23,11 +24,18 @@ Category.all = async (req, res) => {
 
 Category.add = async (req, res) => {
     try {
+        const data = {
+            name: req.body.name,
+        }
         const {
-            name
-        } = req.body
-        const data = await model.add(name)
-        return response(res, 201, 'Category added successfully', data)
+            error
+        } = validator.addCategory(data);
+
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const results = await model.add(data)
+        return response(res, 201, 'Category added successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -35,12 +43,18 @@ Category.add = async (req, res) => {
 
 Category.edit = async (req, res) => {
     try {
+        const data = {
+            id: req.body.id,
+            name: req.body.name,
+        }
         const {
-            id,
-            name
-        } = req.body
-        const data = await model.edit(id, name)
-        return response(res, 200, 'Category updated successfully', data)
+            error
+        } = validator.editCategory(data);
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const results = await model.edit(data)
+        return response(res, 200, 'Category updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
@@ -48,11 +62,17 @@ Category.edit = async (req, res) => {
 
 Category.delete = async (req, res) => {
     try {
+        const data = {
+            id: req.body.id,
+        }
         const {
-            id
-        } = req.body
-        const data = await model.delete(id)
-        return response(res, 200, 'Category deleted successfully', data)
+            error
+        } = validator.deleteCategory(data);
+        if (error) {
+            return response(res, 400, error.details[0].message);
+        }
+        const results = await model.delete(data)
+        return response(res, 200, 'Category deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
     }
