@@ -2,7 +2,6 @@ const jwtDecode = require("jwt-decode")
 const response = require("../helper/response")
 const model = require('../model/User')
 
-
 module.exports.grantAccess = (roles) => {
     return async (req, res, next) => {
         try {
