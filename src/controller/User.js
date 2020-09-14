@@ -48,15 +48,14 @@ User.add = async (req, res) => {
             name: req.body.name,
             role: req.body.role,
         }
-        const {
-            error
-        } = validator.addUser(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.addUser(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const passHash = await hashPassword(req.body.password)
         const uuid = uuidv4()
         const results = await model.add(uuid, passHash, data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 201, 'User added successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -72,14 +71,13 @@ User.edit = async (req, res) => {
             name: req.body.name,
             role: req.body.role,
         }
-        const {
-            error
-        } = validator.editUser(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.editUser(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const passHash = await hashPassword(req.body.password)
         const results = await model.edit(passHash, data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'User updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -91,13 +89,12 @@ User.delete = async (req, res) => {
         const data = {
             id: req.body.id,
         }
-        const {
-            error
-        } = validator.deleteUser(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.deleteUser(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.delete(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'User deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)

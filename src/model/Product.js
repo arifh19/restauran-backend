@@ -9,7 +9,7 @@ Product.getAll = (column, sort) => {
                 const setUrl = (product) => {
                     let products = {
                         ...product,
-                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
+                        image: `http://${ip.address()}:${process.env.PORT}/public/upload/${product.image}`
                     }
                     return products;
                 }
@@ -29,7 +29,7 @@ Product.get = (id) => {
                 const setUrl = (product) => {
                     let products = {
                         ...product,
-                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
+                        image: `http://${ip.address()}:${process.env.PORT}/public/upload/${product.image}`
                     }
                     return products;
                 }

@@ -27,14 +27,13 @@ Category.add = async (req, res) => {
         const data = {
             name: req.body.name,
         }
-        const {
-            error
-        } = validator.addCategory(data);
-
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.addCategory(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
+
         const results = await model.add(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 201, 'Category added successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -47,13 +46,12 @@ Category.edit = async (req, res) => {
             id: req.body.id,
             name: req.body.name,
         }
-        const {
-            error
-        } = validator.editCategory(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.editCategory(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.edit(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'Category updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -65,13 +63,12 @@ Category.delete = async (req, res) => {
         const data = {
             id: req.body.id,
         }
-        const {
-            error
-        } = validator.deleteCategory(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validate.deleteCategory(data)
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.delete(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'Category deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)

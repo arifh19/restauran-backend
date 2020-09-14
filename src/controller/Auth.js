@@ -12,16 +12,14 @@ class Auth {
                 username: req.body.username,
                 password: req.body.password,
             }
-            const {
-                error
-            } = validator.Login(data)
-            if (error) {
-                return response(res, 400, error.details[0].message);
+            const errors = validator.Login(data)
+            if (errors) {
+                return response(res, 400, 'Error', errors)
             }
-            ``
+
             const userDB = await model.getByUsername(req.body.username)
             if (userDB.length <= 0) {
-                return respone(res, 200, "Username tidak terdaftar")
+                return response(res, 400, 'Error', "Username tidak terdaftar")
             }
 
             const passwordReq = req.body.password

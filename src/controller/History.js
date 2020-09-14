@@ -30,14 +30,13 @@ History.add = async (req, res) => {
             orders: req.body.orders,
             amount: req.body.amount
         };
-        const {
-            error
-        } = validator.addHistory(data);
+        const errors = validator.addHistory(data)
 
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.add(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 201, 'History added successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -54,13 +53,13 @@ History.edit = async (req, res) => {
             orders: req.body.orders,
             amount: req.body.amount
         };
-        const {
-            error
-        } = validator.editHistory(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.editHistory(data)
+
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.edit(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'History updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -72,13 +71,13 @@ History.delete = async (req, res) => {
         const data = {
             id: req.body.id,
         };
-        const {
-            error
-        } = validator.deleteHistory(data);
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.deleteHistory(data)
+
+        if (errors) {
+            return response(res, 400, 'Error', errors)
         }
         const results = await model.delete(data)
+        redis.redisDB.del(req.originalUrl)
         return response(res, 200, 'History deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)

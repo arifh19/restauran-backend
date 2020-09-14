@@ -2,6 +2,7 @@ const model = require('../model/Product')
 const response = require('../helper/response')
 const redis = require('../config/redis')
 const validator = require('../helper/validator');
+const fs = require('fs')
 
 const Product = {}
 
@@ -23,6 +24,7 @@ Product.all = async (req, res) => {
         const results = await model.getAll(column, sort)
         const data_redis = JSON.stringify(results)
         redis.redisDB.setex(req.originalUrl, 30, data_redis)
+
         let message
         if (results.length === 0) {
             message = 'No Data'
@@ -45,6 +47,8 @@ Product.show = async (req, res) => {
         } else {
             message = 'Data is found'
         }
+        const data_redis = JSON.stringify(results)
+        redis.redisDB.setex(req.originalUrl, 30, data_redis)
         return response(res, 200, message, results)
 
     } catch (error) {
@@ -61,15 +65,21 @@ Product.add = async (req, res) => {
             stock: req.body.stock,
             category_id: req.body.category_id
         };
-        const {
-            error
-        } = validator.addProduct(data);
 
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.addProduct(data)
+        if (errors) {
+            fs.unlinkSync(req.file.path)
+            return response(res, 400, 'Error', errors)
         }
 
         const results = await model.add(data)
+        redis.redisDB.keys(`${req.baseUrl}*`, (err, res) => {
+            if (!err) {
+                res.forEach((val) => {
+                    redis.redisDB.del(val)
+                })
+            }
+        })
         return response(res, 201, 'Product added successfully', results)
 
     } catch (error) {
@@ -87,15 +97,20 @@ Product.edit = async (req, res) => {
             stock: req.body.stock,
             category_id: req.body.category_id
         };
-        const {
-            error
-        } = validator.editProduct(data);
-
-        if (error) {
-            return response(res, 400, error.details[0].message);
+        const errors = validator.editProduct(data)
+        if (errors) {
+            fs.unlinkSync(req.file.path)
+            return response(res, 400, 'Error', errors)
         }
 
         const results = await model.edit(data)
+        redis.redisDB.keys(`${req.baseUrl}*`, (err, res) => {
+            if (!err) {
+                res.forEach((val) => {
+                    redis.redisDB.del(val)
+                })
+            }
+        })
         return response(res, 200, 'Product updated successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
@@ -106,6 +121,13 @@ Product.delete = async (req, res) => {
     try {
         const id = req.params.id
         const results = await model.delete(id)
+        redis.redisDB.keys(`${req.baseUrl}*`, (err, res) => {
+            if (!err) {
+                res.forEach((val) => {
+                    redis.redisDB.del(val)
+                })
+            }
+        })
         return response(res, 200, 'Product deleted successfully', results)
     } catch (error) {
         return response(res, 500, 'Error', error)
