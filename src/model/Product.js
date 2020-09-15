@@ -6,15 +6,7 @@ Product.getAll = (column, sort) => {
     return new Promise((resolve, reject) => {
         database.query(`SELECT T1.*, T2.name as category FROM products T1 INNER JOIN categories T2 ON T1.category_id=T2.id ORDER BY ${column} ${sort}`)
             .then((res) => {
-                const setUrl = (product) => {
-                    let products = {
-                        ...product,
-                        image: `http://${ip.address()}:${process.env.PORT}/public/upload/${product.image}`
-                    }
-                    return products;
-                }
-                data = res.rows.map(setUrl)
-                resolve(data)
+                resolve(res.rows)
             })
             .catch((err) => {
                 reject(err)
@@ -26,15 +18,7 @@ Product.get = (id) => {
     return new Promise((resolve, reject) => {
         database.query(`SELECT * FROM products WHERE id=${id}`)
             .then((res) => {
-                const setUrl = (product) => {
-                    let products = {
-                        ...product,
-                        image: `http://${ip.address()}:${process.env.PORT}/public/upload/${product.image}`
-                    }
-                    return products;
-                }
-                data = res.rows.map(setUrl)
-                resolve(data[0])
+                resolve(res.rows)
             })
             .catch((err) => {
                 reject(err)
@@ -96,15 +80,7 @@ Product.searchByName = (name) => {
     return new Promise((resolve, reject) => {
         database.query(`SELECT * FROM products WHERE LOWER(name) LIKE LOWER('%${name}%')`)
             .then((res) => {
-                const setUrl = (product) => {
-                    let products = {
-                        ...product,
-                        image: `http://${ip.address()}:${process.env.PORT}/static/${product.image}`
-                    }
-                    return products;
-                }
-                data = res.rows.map(setUrl)
-                resolve(data)
+                resolve(res.rows)
             })
             .catch((err) => {
                 reject(err)
