@@ -1,6 +1,5 @@
 const response = require("../helper/response")
 const jwt = require("jsonwebtoken")
-// const jwtDecode = require("jwt-decode")
 
 const isLogin = (req, res, next) => {
     const {

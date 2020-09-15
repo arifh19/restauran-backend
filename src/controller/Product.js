@@ -58,6 +58,14 @@ Product.show = async (req, res) => {
 
 Product.add = async (req, res) => {
     try {
+        if (req.file === undefined) {
+            let errors = {
+                image: [
+                    "The image field is required"
+                ]
+            }
+            return response(res, 400, 'Error', errors)
+        }
         const data = {
             name: req.body.name,
             image: req.file.filename,
