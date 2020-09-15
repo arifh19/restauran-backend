@@ -65,7 +65,6 @@ Product.add = async (req, res) => {
                         "The image field is required."
                     ]
                 }
-
             }
             return response(res, 400, 'Error', errors)
         }
@@ -107,7 +106,6 @@ Product.edit = async (req, res) => {
                         "The image field is required."
                     ]
                 }
-
             }
             return response(res, 400, 'Error', errors)
         }
