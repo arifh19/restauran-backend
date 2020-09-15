@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const redis = require('./src/config/redis')
 const server = express()
 const port = process.env.PORT
+const isLogin = require('./src/middleware/validate')
 
 server.use(bodyPraser.urlencoded({
     extended: true
@@ -16,7 +17,7 @@ server.use(bodyPraser.json())
 server.use(morgan('dev'))
 server.use(routes)
 server.use(cors());
-server.use("/public", express.static("public"))
+server.use("/public", isLogin, express.static("public"))
 
 database.connect()
     .then((result) => {
