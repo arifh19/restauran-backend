@@ -5,7 +5,7 @@ const isLogin = require('../middleware/validate')
 const authorize = require('../middleware/authorize')
 const cache = require('../middleware/cache')
 
-route.get('/', isLogin, authorize.grantAccess(['admin', 'operator']), cache, controller.all)
+route.get('/', isLogin, authorize.grantAccess(['admin']), cache, controller.all)
 route.post('/', isLogin, authorize.grantAccess(['admin', 'operator']), controller.add)
 route.put('/', isLogin, authorize.grantAccess(['admin']), controller.edit)
 route.delete('/', isLogin, authorize.grantAccess(['admin']), controller.delete)
