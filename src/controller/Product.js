@@ -60,9 +60,12 @@ Product.add = async (req, res) => {
     try {
         if (req.file === undefined) {
             let errors = {
-                image: [
-                    "The image field is required"
-                ]
+                errors: {
+                    image: [
+                        "The image field is required."
+                    ]
+                }
+
             }
             return response(res, 400, 'Error', errors)
         }
@@ -97,6 +100,17 @@ Product.add = async (req, res) => {
 
 Product.edit = async (req, res) => {
     try {
+        if (req.file === undefined) {
+            let errors = {
+                errors: {
+                    image: [
+                        "The image field is required."
+                    ]
+                }
+
+            }
+            return response(res, 400, 'Error', errors)
+        }
         const data = {
             id: req.body.id,
             name: req.body.name,
