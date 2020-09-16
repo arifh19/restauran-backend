@@ -15,7 +15,7 @@ server.use(bodyPraser.urlencoded({
 }))
 server.use(bodyPraser.json())
 server.use(morgan('dev'))
-server.use(routes)
+server.use('/api', routes)
 server.use(cors());
 server.use("/public", isLogin, express.static("public"))
 
