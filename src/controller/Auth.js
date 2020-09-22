@@ -46,8 +46,8 @@ class Auth {
         try {
             const {
                 refresh_token
-            } = req.headers
-
+            } = req.body
+            console.log(req.body)
             if (!refresh_token) {
                 const result = {
                     msg: "Refresh Token is required",

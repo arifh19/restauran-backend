@@ -3,7 +3,6 @@ const multer = require("multer")
 const storage = multer.diskStorage({
     destination: "public/upload",
     filename: (req, file, cb) => {
-        console.log("as")
         cb(null, new Date().getTime() + ".upload")
     }
 })

@@ -17,8 +17,8 @@ server.use(bodyPraser.json())
 server.use(morgan('dev'))
 server.use(routes)
 server.use(cors());
-// server.use("/public", isLogin, express.static("public"))
 server.use("/public", express.static("public"))
+// server.use("/public", express.static("public"))
 
 database.connect()
     .then((result) => {

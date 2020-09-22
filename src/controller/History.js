@@ -22,6 +22,7 @@ History.all = async (req, res) => {
 }
 
 History.add = async (req, res) => {
+    console.log(req.body)
     try {
         const data = {
             invoices: req.body.invoices,

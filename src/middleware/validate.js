@@ -2,15 +2,13 @@ const response = require("../helper/response")
 const jwt = require("jsonwebtoken")
 
 const isLogin = (req, res, next) => {
-    const {
-        access_token
-    } = req.headers
-    if (!access_token) {
+    if (!req.headers.authorization) {
         const result = {
             msg: "Login dulu",
         }
         return response(res, 401, 'Error', result)
     }
+    const access_token = req.headers.authorization.split(' ')[1];
 
     jwt.verify(access_token, process.env.JWT_KEYS, (err, decode) => {
         if (err) {

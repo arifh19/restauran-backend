@@ -7,7 +7,7 @@ module.exports.grantAccess = (roles) => {
         try {
             const {
                 uuid
-            } = jwtDecode(req.headers.access_token)
+            } = jwtDecode(req.headers.authorization.split(' ')[1])
             const user = await model.getByUuid(uuid)
             let isValid = false
             roles.map((r) => {
