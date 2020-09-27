@@ -9,26 +9,23 @@ const redis = require('./src/config/redis')
 const server = express()
 const port = process.env.PORT
 const isLogin = require('./src/middleware/validate')
-const SimpleNodeLogger = require('simple-node-logger')
-
-const opts = {
-    logDirectory: './mylogfiles', // NOTE: folder must exist and be writable...
-    fileNamePattern: 'roll-<DATE>.log',
-    dateFormat: 'YYYY.MM.DD'
-};
-const log = require('simple-node-logger').createSimpleLogger(opts);
-log.setLevel('info');
-
+const fs = require('fs')
+const path = require('path')
+const accessLogStream = fs.createWriteStream(path.join('./logfile', `${new Date().toISOString().substring(0, 10)}-access.log`), {
+    flags: 'a'
+})
 server.use(bodyPraser.urlencoded({
     extended: true
 }))
 server.use(bodyPraser.json())
-server.use(morgan('dev'))
+
+server.use(morgan('combined', {
+    stream: accessLogStream
+}))
 server.use(routes)
 server.use(cors());
 server.use("/public", express.static("public"))
 // server.use("/public", express.static("public"))
-
 
 database.connect()
     .then((result) => {
