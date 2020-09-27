@@ -9,6 +9,7 @@ const redis = require('./src/config/redis')
 const server = express()
 const port = process.env.PORT
 const isLogin = require('./src/middleware/validate')
+const SimpleNodeLogger = require('simple-node-logger')
 
 server.use(bodyPraser.urlencoded({
     extended: true
@@ -19,6 +20,14 @@ server.use(routes)
 server.use(cors());
 server.use("/public", express.static("public"))
 // server.use("/public", express.static("public"))
+
+// create a rolling file logger based on date/time that fires process events
+const opts = {
+    logDirectory: 'logfiles', // NOTE: folder must exist and be writable...
+    fileNamePattern: 'file-<DATE>.log',
+    dateFormat: 'YYYY.MM.DD'
+};
+log = SimpleNodeLogger.createSimpleLogger(opts);
 
 database.connect()
     .then((result) => {
