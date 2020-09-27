@@ -11,6 +11,14 @@ const port = process.env.PORT
 const isLogin = require('./src/middleware/validate')
 const SimpleNodeLogger = require('simple-node-logger')
 
+const opts = {
+    logDirectory: './mylogfiles', // NOTE: folder must exist and be writable...
+    fileNamePattern: 'roll-<DATE>.log',
+    dateFormat: 'YYYY.MM.DD'
+};
+const log = require('simple-node-logger').createSimpleLogger(opts);
+log.setLevel('info');
+
 server.use(bodyPraser.urlencoded({
     extended: true
 }))
@@ -21,7 +29,6 @@ server.use(cors());
 server.use("/public", express.static("public"))
 // server.use("/public", express.static("public"))
 
-const log = require('simple-node-logger').createSimpleLogger('project.log');
 
 database.connect()
     .then((result) => {
