@@ -21,13 +21,7 @@ server.use(cors());
 server.use("/public", express.static("public"))
 // server.use("/public", express.static("public"))
 
-// create a rolling file logger based on date/time that fires process events
-const opts = {
-    logDirectory: 'logfiles', // NOTE: folder must exist and be writable...
-    fileNamePattern: 'file-<DATE>.log',
-    dateFormat: 'YYYY.MM.DD'
-};
-log = SimpleNodeLogger.createSimpleLogger(opts);
+const log = require('simple-node-logger').createSimpleLogger('project.log');
 
 database.connect()
     .then((result) => {
