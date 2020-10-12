@@ -59,7 +59,7 @@ services:
       - backend
     environment:
       - VUE_APP_URL=http://54.174.88.149 /api
-      - VUE_APP_STATIC_URL:http://54.174.88.149 /api/public/upload/
+      - VUE_APP_STATIC_URL=http://54.174.88.149/api/public/upload/
 
 networks:
   restaurant-network:
