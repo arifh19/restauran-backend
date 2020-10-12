@@ -34,7 +34,6 @@ pipeline {
                 script {
                     // CommitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
                     buildDocker = docker.build("${REPO}:${GIT_BRANCH}")
-                    sh ('docker rmi $(docker images --filter "dangling=true" -q --no-trunc)')
                 }
             }
         }
