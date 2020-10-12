@@ -21,6 +21,8 @@ services:
 
   backend:
     image: arifh19/restaurant-backend:dev
+    ports:
+      - "127.0.0.1:3000:3000"
     networks:
       - restaurant-network
     depends_on:
