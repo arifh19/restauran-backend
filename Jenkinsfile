@@ -67,7 +67,7 @@ pipeline {
                                             // execCommand: "docker pull ${REPO}:latest; docker kill ${REPO}; docker run -d --rm --name ${REPO} -p 80:80 ${REPO}:latest",
                                             sourceFiles: "docker-compose.yml",
                                             remoteDirectory: "${REMOTE_DIR}",
-                                            execCommand: "docker-compose -f restaurant/docker-compose.yml stop; docker rm arifh19/restaurant_frontend_1; docker rmi ${REPO}:${BRANCH_DEV}; docker-compose -f restaurant/docker-compose.yml up -d",
+                                            execCommand: "docker-compose -f restaurant/docker-compose.yml stop; docker rm arifh19/restaurant_backend_1; docker rm arifh19/restaurant_backend_2; docker rm arifh19/restaurant_backend_3; docker rmi ${REPO}:${BRANCH_DEV}; docker-compose -f restaurant/docker-compose.yml up -d",
                                             execTimeout: 120000,
                                         )
                                     ]
@@ -85,7 +85,7 @@ pipeline {
                                             sourceFiles: "docker-compose.dev.yml",
                                             remoteDirectory: "${REMOTE_DIR}",
                                             // execCommand: "docker rmi arifh19/cobatampil:${env.GIT_BRANCH}; docker pull arifh19/cobatampil:${env.GIT_BRANCH}; docker kill cobatampil; docker run -d --rm --name cobatampil -p 80:80 arifh19/cobatampil:${env.GIT_BRANCH}",
-                                            execCommand: "docker-compose -f restaurant/docker-compose.dev.yml stop; docker rm arifh19/restaurant_frontend_1; docker rmi ${REPO}:${BRANCH_DEV}; docker-compose -f restaurant/docker-compose.dev.yml up -d",
+                                            execCommand: "docker-compose -f restaurant/docker-compose.dev.yml stop; docker rm arifh19/restaurant_backend_1; docker rm arifh19/restaurant_backend_2; docker rm arifh19/restaurant_backend_3; docker rmi ${REPO}:${BRANCH_DEV}; docker-compose -f restaurant/docker-compose.dev.yml up -d",
                                             execTimeout: 120000,
                                         ),
                                     ]
