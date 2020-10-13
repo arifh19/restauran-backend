@@ -30,6 +30,7 @@ services:
       - redis
     volumes:
       - ./backend/logfile:/backend/logfile
+      - ./backend/public/upload:/backend/public/upload
     deploy:
       mode: replicated
       replicas: 3
