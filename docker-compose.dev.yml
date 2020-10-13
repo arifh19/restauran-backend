@@ -22,7 +22,7 @@ services:
   backend:
     image: arifh19/restaurant-backend:dev
     ports:
-      - "3000-3002:3000"
+      - "127.0.0.1:3000-3002:3000"
     networks:
       - restaurant-network
     depends_on:
@@ -50,7 +50,7 @@ services:
   frontend:
     image: arifh19/restaurant-frontend
     ports:
-      - "127.0.0.1:5000:80"
+      - "5000:80"
     volumes:
       - ./frontend/public:/dist/public
     networks:
