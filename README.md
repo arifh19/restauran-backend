@@ -1,5 +1,4 @@
 # Restaurant Backend
-Tes
 ## Technology
 `Node JS`
 `Express JS`
